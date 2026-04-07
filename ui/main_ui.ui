@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AI 복지 매칭 시스템 - Matching Engine</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+
+    <item>
+     <widget class="QFrame" name="headerFrame">
+      <property name="styleSheet">
+       <string>background-color: #2d3436; border-radius: 10px; color: white;</string>
+      </property>
+      <layout class="QVBoxLayout" name="headerLayout">
+       <item>
+        <widget class="QLabel" name="label_title">
+         <property name="font">
+          <font><pointsize>16</pointsize><bold>true</bold></font>
+         </property>
+         <property name="text">
+          <string>⚙️ WELFARE MATCHING ENGINE</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_status">
+         <property name="text">
+          <string>시스템이 준비되었습니다. 데이터를 입력해주세요.</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+
+    <item>
+     <widget class="QGroupBox" name="groupBox_input">
+      <property name="title">
+       <string>INPUT (Excel/CSV)</string>
+      </property>
+      <layout class="QHBoxLayout" name="inputLayout">
+       <item>
+        <widget class="QPushButton" name="btn_import">
+         <property name="minimumSize">
+          <size><width>0</width><height>40</height></size>
+         </property>
+         <property name="text">
+          <string>📂 대상자 엑셀 등록</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_service_import">
+         <property name="minimumSize">
+          <size><width>0</width><height>40</height></size>
+         </property>
+         <property name="text">
+          <string>📊 복지 서비스(CSV) 업데이트</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+
+    <item>
+     <widget class="QProgressBar" name="pbar">
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+
+    <item>
+     <widget class="QGroupBox" name="groupBox_records">
+      <property name="title">
+       <string>MATCHING RECORDS</string>
+      </property>
+      <layout class="QVBoxLayout" name="recordLayout">
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <property name="columnCount">
+          <number>3</number>
+         </property>
+         <column>
+          <property name="text"><string>대상자명</string></property>
+         </column>
+         <column>
+          <property name="text"><string>장애유형</string></property>
+         </column>
+         <column>
+          <property name="text"><string>추천 서비스</string></property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+
+    <item>
+     <widget class="QPushButton" name="btn_match">
+      <property name="minimumSize">
+       <size><width>0</width><height>50</height></size>
+      </property>
+      <property name="styleSheet">
+       <string>background-color: #0984e3; color: white; font-weight: bold; font-size: 14px;</string>
+      </property>
+      <property name="text">
+       <string>⚡️ AI 자동 매칭 실행</string>
+      </property>
+     </widget>
+    </item>
+
+   </layout>
+  </widget>
+ </widget>
+</ui>
