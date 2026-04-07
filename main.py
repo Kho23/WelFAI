@@ -31,6 +31,7 @@ class WelfareApp(QMainWindow):
             header.setSectionResizeMode(2, header.Stretch)
 
     def open_file_dialog(self, mode):
+        """mode 에 따라 다른 thread 를 실행 - 이용자 정보 / 복지서비스 정보"""
         if mode == 'user':
             title, file_filter = '대상자 엑셀 선택', 'Excel Files (*.xlsx *.xls)'
         else:

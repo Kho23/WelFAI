@@ -1,6 +1,9 @@
 import sqlite3
 import os
 
+from core.models import UserInfo
+from core.enums import DisabilityLevel, DisabilityType
+
 class DB_handler:
     def __init__(self):
         self.db_path = os.path.join(os.path.dirname(__file__), 'welfare.db')
@@ -40,13 +43,13 @@ class DB_handler:
         conn.commit()
         conn.close()
 
-    def select_all_users(self):
+    def select_all_users(self) -> list[UserInfo]:
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM Users')
         all_user_info = cursor.fetchall()
         conn.close()
-        return all_user_info
+        return [UserInfo(name = user[0], birth=user[1], disability_type=user) for user in all_user_info]
 
 if __name__=='__main__':
     db = DB_handler()
