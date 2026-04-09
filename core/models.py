@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Optional
-from enums import DisabilityType, DisabilityLevel
+from core.enums import DisabilityType, DisabilityLevel
 
 @dataclass(frozen=True)
 class UserInfo:

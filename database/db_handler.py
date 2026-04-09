@@ -33,6 +33,7 @@ class DB_handler:
         conn.close()
 
     def insert_user(self, name, birth, dis_type, dis_level, area ):
+        """DB에 사용자 정보를 저장합니다."""
         conn = self.get_connection()
         cursor = conn.cursor()
         sql = f"""
@@ -44,6 +45,7 @@ class DB_handler:
         conn.close()
 
     def select_all_users(self) -> list[UserInfo]:
+        """DB에 저장되어 있는 모든 사용자 정보를 불러온 뒤 @dataclass 리스트 형태로 반환해줍니다."""
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM Users')
