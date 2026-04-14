@@ -1,9 +1,12 @@
+from cProfile import label
 from pathlib import Path
 import pandas as pd
 import tarfile
 import urllib.request
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import alpha
+
 
 def load_housing_data():
     """
@@ -91,3 +94,23 @@ for train_index, test_index in splitter.split(housing, housing['income_cat']):
 
 strat_train_set, strat_test_set = strat_split[0]
 
+strat_test_set, strat_test_set = train_test_split(
+    housing, test_size=0.2, stratify=housing['income_cat'], random_state=42
+)
+print(strat_test_set['income_cat'].value_counts() / len(strat_test_set))
+
+housing = strat_train_set.copy()
+housing.plot(kind = 'scatter', x = 'longitude', y = 'latitude', grid = True, alpha = 0.2)
+plt.xlabel('경도')
+plt.ylabel('위도')
+plt.show()
+
+housing.plot(kind='scatter', x='longitude', y='latitude', grid=True,
+             s=housing['population']/100, label = '인구',
+             c='median_house_value', cmap='jet', colorbar = True,
+             legend = True, figsize = (10, 7)
+             )
+cax = plt.gcf().get_axes()[1]
+plt.xlabel('경도')
+plt.ylabel('위도')
+plt.show()
