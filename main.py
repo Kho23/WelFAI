@@ -3,14 +3,17 @@ import os
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QTableWidgetItem
 from PyQt5 import uic
 
+from database.db_handler import DB_handler
 from threads.excel_thread import ExcelThread
 from threads.service_thread import ServiceImportThread
+from threads.match_thread import MatchThread
 
 UI_PATH = os.path.join(os.path.dirname(__file__), 'ui', 'main_ui.ui')
 
 class WelfareApp(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.db = DB_handler()
         try:
             uic.loadUi(UI_PATH, self)
         except FileNotFoundError:
@@ -31,37 +34,38 @@ class WelfareApp(QMainWindow):
             header.setSectionResizeMode(2, header.Stretch)
 
     def open_file_dialog(self, mode):
-        """mode 에 따라 다른 thread 를 실행 - 이용자 정보 / 복지서비스 정보"""
+        """mode 에 따라 실행"""
         if mode == 'user':
             title, file_filter = '대상자 엑셀 선택', 'Excel Files (*.xlsx *.xls)'
-        else:
-            title, file_filter = '복지 서비스 csv 선택', 'Excel Files (*.xlsx *.xls)'
-        file_path, _ = QFileDialog.getOpenFileName(self, title, '', file_filter)
-        if file_path:
-            if mode == 'user':
+            file_path, _ = QFileDialog.getOpenFileName(self, title, '', file_filter)
+            if file_path:
                 self.run_import_thread(file_path)
-            else:
-                self.run_service_import_thread(file_path)
+        else:
+            # 🚨 복지 서비스는 파일을 선택하지 않고 바로 API 호출 쓰레드 실행!
+            self.run_service_import_thread()
 
-    def run_import_thread(self, path):
-        self.btn_import.setEnabled(False)
-        self.label_status.setText('데이터를 등록 중입니다...')
-        self.worker = ExcelThread(path)
-        self.worker.progress_signal.connect(self.pbar.setValue)
-        self.worker.finished_signal.connect(self.on_finished)
-        self.worker.start()
-
-    def run_service_import_thread(self, path):
+    def run_import_thread(self):
+        """복지서비스 API 등록 쓰레드 실행"""
         self.btn_service_import.setEnabled(False)
-        self.label_status.setText('복지서비스 데이터 등록 중')
+        self.label_status.setText('공공데이터 API로부터 최신 정보를 가져오는 중...')
 
-        self.service_worker = ServiceImportThread(path)
+        self.service_worker = ServiceImportThread() # 🚨 인자 전달 없음
+        self.service_worker.progress_signal.connect(self.pbar.setValue)
+        self.service_worker.finished_signal.connect(self.on_finished)
+        self.service_worker.start()
+
+    def run_service_import_thread(self):
+        """복지서비스 API 등록 쓰레드 실행"""
+        self.btn_service_import.setEnabled(False)
+        self.label_status.setText('공공데이터 API로부터 최신 정보를 가져오는 중...')
+
+        self.service_worker = ServiceImportThread() # 🚨 인자 전달 없음
         self.service_worker.progress_signal.connect(self.pbar.setValue)
         self.service_worker.finished_signal.connect(self.on_finished)
         self.service_worker.start()
 
     def on_finished(self, success, msg):
-        self.btn_import.setEnabled(False)
+        self.btn_import.setEnabled(True)
         self.btn_service_import.setEnabled(True)
 
         if success:
@@ -74,24 +78,27 @@ class WelfareApp(QMainWindow):
     def run_ai_matching(self):
         """AI 자동 매칭 실행 및 테이블 출력"""
         self.label_status.setText('AI 매칭엔진 가동 중')
-        self.pbar.setValue(50)
+        self.btn_match.setEnabled(True)
+        self.pbar.setValue(10)
+        """DB에 저장된 '대상자' 와 '서비스'를 연결해주는 쓰레드 실행"""
+        self.match_worker = MatchThread(self.db)
+        self.match_worker.finished_signal.connect(self.display_matching_results)
+        self.match_worker.start()
 
+    def display_matching_results(self, results):
+        """매칭 결과를 테이블에 출력"""
         self.tableWidget.setRowCount(0)
 
-        sample_results = [
-            ("김철수", "지체장애(심함)", "장애인 개인예산제 운영"),
-            ("이영희", "시각장애(심하지않음)", "(산재근로자)사회심리재활지원")
-        ]
-
-        for row, (name, t, service) in enumerate(sample_results):
+        for row, data in enumerate(results):
             self.tableWidget.insertRow(row)
-            self.tableWidget.setItem(row, 0, QTableWidgetItem(name))
-            self.tableWidget.setItem(row, 1, QTableWidgetItem(t))
-            self.tableWidget.setItem(row, 2, QTableWidgetItem(service))
-        self.pbar.setValue(100)
-        self.label_status.setText('매칭이 완료되었습니다.')
-        QMessageBox.information(self, '매칭 완료', 'AI 매칭 엔진이 서비스를 정리했습니다.')
+            self.tableWidget.setItem(row, 0, QTableWidgetItem(str(data[0])))
+            self.tableWidget.setItem(row, 1, QTableWidgetItem(str(data[1])))
+            self.tableWidget.setItem(row, 2, QTableWidgetItem(str(data[2])))
 
+        self.pbar.setValue(100)
+        self.btn_match.setEnabled(True)
+        self.label_status.setText('매칭이 완료되었습니다.')
+        QMessageBox.information(self, '매칭 완료', f'총 {len(results)}건이 매칭되었습니다.')
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = WelfareApp()

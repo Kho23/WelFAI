@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 from core.enums import DisabilityType, DisabilityLevel
 
@@ -8,16 +8,16 @@ class UserInfo:
     name:str
     birth:str
     disability_type:DisabilityType
-    disability_level = DisabilityLevel
+    disability_level : DisabilityLevel
     address : str
     id:Optional[int] = None
 
 @dataclass
 class WelfareService:
     """복지 서비스 정보 모델"""
-    service_id : str
-    service_name : str
+    name : str
     service_url : str
     summary : str
     department : str
-    id : Optional[int] = None
+    target : str
+    id: Optional[int] = None

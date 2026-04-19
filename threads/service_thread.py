@@ -1,41 +1,55 @@
-from zoneinfo import available_timezones
+import requests
+import xmltodict
 
-import pandas as pd
+from core.models import WelfareService
 from PyQt5.QtCore import QThread, pyqtSignal
 from database.db_handler import DB_handler
+from core.api_data import api_data
 
 class ServiceImportThread(QThread):
     progress_signal = pyqtSignal(int) # 진행률
     finished_signal = pyqtSignal(bool, str) # 성공여부 / 메세지
 
-    def __init__(self, file_path):
+    def __init__(self):
         super().__init__()
-        self.file_path = file_path
         self.db = DB_handler()
 
     def run(self):
         try:
-            df = pd.read_excel(self.file_path, engine='openpyxl')
-            self.progress_signal.emit(30)
-            target_col = ['서비스아이디', '서비스명', '서비스URL', '서비스요약', '소관부처명']
+            self.progress_signal.emit(10)
+            req_url = api_data.get_request_url()
+            res = requests.get(req_url)
 
-            available_col = [col for col in target_col if col in df.columns]
+            if res.status_code != 200:
+                raise Exception(f'API 통신 실패(실패코드:{res.status_code}')
+            self.progress_signal.emit(50)
 
-            if len(available_col) < len(target_col):
-                missing = set(target_col) - set(available_col)
-                raise Exception(f"엑셀 파일 컬럼 부족 오류: {missing}")
-            selected_df = df[target_col]
+            dict_data = xmltodict.parse(res.text)
 
-            selected_df = selected_df.fillna("")
-            data_list = selected_df.values.tolist()
+            # API 응답 유효성 검사
+            if 'wantedList' not in dict_data or 'servList' not in dict_data['wantedList']:
+                raise Exception("조회된 복지 서비스 데이터가 없습니다.")
 
-            self.progress_signal.emit(60)
+            service_list = dict_data['wantedList']['servList']
+            if not isinstance(service_list, list):
+                service_list = [service_list]
 
-            if hasattr(self.db, 'insert_services'):
-                self.db.insert_services(data_list)
-            else:
-                self.progress_signal.emit(100)
-                self.finished_signal.emit(True, f"총 {len(data_list)} 건의 복지서비스 엑셀 데이터가 업데이트 되었습니다.")
+            self.progress_signal.emit(70)
 
+            data_list = []
+
+            for item in service_list:
+                service = WelfareService(
+                    name=item.get('servNm', ''),  # 서비스명
+                    department=item.get('jurMnofNm', ''),  # 소관부처명
+                    summary=item.get('servDgst', ''),  # 서비스 요약
+                    target=item.get('trgterIndvdlArray', ''),  # 대상자(가구유형)
+                    service_url=item.get('servDtlLink', '')  # 상세 링크
+                )
+                data_list.append(service)
+            self.db.insert_services(data_list)
+            self.progress_signal.emit(100)
+            self.finished_signal.emit(True, f'총 {len(data_list)} 건의 최신 데이터를 API로 갱신했습니다.')
         except Exception as e :
-            self.finished_signal.emit(False, f'엑셀 로드 중 오류발생: {str(e)}' )
+            print(f' 서비스 임포트 스레드 에러 {e}')
+            self.finished_signal.emit(False, f'에러 발생: {str(e)}')

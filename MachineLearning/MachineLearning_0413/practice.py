@@ -1,4 +1,3 @@
-from cProfile import label
 from pathlib import Path
 import pandas as pd
 import tarfile
@@ -114,3 +113,19 @@ cax = plt.gcf().get_axes()[1]
 plt.xlabel('경도')
 plt.ylabel('위도')
 plt.show()
+
+from pandas.plotting import scatter_matrix
+
+attributes = ['median_house_value', 'median_income', 'total_rooms', 'housing_median_age']
+scatter_matrix(housing[attributes], figsize=(12, 8))
+plt.show()
+
+housing.plot(kind = 'scatter', x='median_income', y = 'median_house_value',
+             alpha = 0.1, grid = True)
+plt.xlabel('중간 소득')
+plt.ylabel('중간 주택 가격')
+plt.show()
+
+housing['rooms_per_house'] = housing['total_rooms'] / housing['households'] # 총 주택 수 / 총 방 수
+housing['bedrooms_ratio'] = housing['total_bedrooms'] / housing['total_rooms'] #
+housing['people_per_house'] = housing['population'] / housing['households']
