@@ -21,15 +21,20 @@ class MatchThread(QThread):
             user_keyword = user.disability_type.replace('장애', '') if user.disability_type else ''
         # 서비스 목록을 돌면서 키워드 검사
             for service in services:
-                summary = service.summary if service.summary else ''
-                s_name = service.name if service.name else ''
+                summary = service.summary or ''
+                s_name = service.name or ''
+                s_url = service.service_url or 'URL 없음'
 
                 if user_keyword and (user_keyword in summary or user_keyword in s_name):
                     matched_service_name = f'[특화] {s_name}'
+                    matched_summary = summary
+                    matched_url = s_url
                     break
                 elif '장애인' in summary or '장애인' in s_name:
                     matched_service_name = f"[공통] {s_name}"
+                    matched_summary = summary
+                    matched_url = s_url
 
-            match_results.append((user.name, user.disability_type, matched_service_name))
+            match_results.append((user.name, user.disability_type, matched_service_name, matched_summary, matched_url))
 
         self.finished_signal.emit(match_results)

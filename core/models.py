@@ -7,8 +7,8 @@ class UserInfo:
     """대상자 정보 모델"""
     name:str
     birth:str
-    disability_type:DisabilityType
-    disability_level : DisabilityLevel
+    disability_type:str
+    disability_level : str
     address : str
     id:Optional[int] = None
 
