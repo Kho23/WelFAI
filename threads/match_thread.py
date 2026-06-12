@@ -18,8 +18,10 @@ class MatchThread(QThread):
 
         for user in users:
             matched_service_name = '추천 서비스 없음'
+            matched_summary = ''
+            matched_url = 'URL 없음'
             user_keyword = user.disability_type.replace('장애', '') if user.disability_type else ''
-        # 서비스 목록을 돌면서 키워드 검사
+            # 서비스 목록을 돌면서 키워드 검사
             for service in services:
                 summary = service.summary or ''
                 s_name = service.name or ''

@@ -84,7 +84,7 @@ class WelfareApp(QMainWindow):
     def run_ai_matching(self):
         """AI 자동 매칭 실행 및 테이블 출력"""
         self.label_status.setText('AI 매칭엔진 가동 중')
-        self.btn_match.setEnabled(True)
+        self.btn_match.setEnabled(False)
         self.pbar.setValue(10)
         """DB에 저장된 '대상자' 와 '서비스'를 연결해주는 쓰레드 실행"""
         self.match_worker = MatchThread(self.db)
@@ -130,7 +130,7 @@ class WelfareApp(QMainWindow):
 
     def export_results(self):
         """매칭 결과를 엑셀로 내보내는 함수"""
-        if not hasattr(self, 'match_result_data') or not self.match_results_data:
+        if not hasattr(self, 'match_results_data') or not self.match_results_data:
             QMessageBox.warning(self, '경고', '내보낼 데이터가 없습니다. 먼저 AI 매칭을 실행해주세요.')
             return
         self.label_status.setText('엑셀 파일로 저장하는 중...')
