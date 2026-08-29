@@ -1,0 +1,80 @@
+/* ─── 기본 ─── */
+* {
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "NanumGothic", sans-serif;
+    font-size: 14px;
+}
+QWidget { background-color: #f5f6fa; color: #1e272e; }
+
+/* ─── 헤더 ─── */
+QFrame#headerFrame {
+    background-color: #2d3436;
+    border-radius: 10px;
+    padding: 14px;
+}
+QFrame#headerFrame QLabel { background: transparent; color: #ffffff; }
+QLabel#label_title  { font-size: 22px; font-weight: bold; }
+QLabel#label_status { font-size: 15px; color: #dfe6e9; }
+
+/* ─── 그룹박스 ─── */
+QGroupBox {
+    font-size: 15px; font-weight: bold;
+    border: 1px solid #dcdde1; border-radius: 8px;
+    margin-top: 14px; padding-top: 14px;
+    background-color: #ffffff;
+}
+QGroupBox::title {
+    subcontrol-origin: margin; subcontrol-position: top left;
+    left: 12px; padding: 0 6px; color: #2d3436;
+}
+
+/* ─── 버튼 ─── */
+QPushButton {
+    background-color: #ffffff; color: #2d3436;
+    border: 1px solid #b2bec3; border-radius: 6px;
+    padding: 10px 16px; font-size: 15px;
+}
+QPushButton:hover   { background-color: #eef1f4; border-color: #0a6ebd; }
+QPushButton:pressed { background-color: #dfe4ea; }
+QPushButton:disabled{ background-color: #f1f2f6; color: #a4b0be; border-color: #dcdde1; }
+
+QPushButton#btn_match {
+    background-color: #0a6ebd; color: #ffffff;
+    font-size: 17px; font-weight: bold;
+    border: none; border-radius: 8px;
+}
+QPushButton#btn_match:hover    { background-color: #085a9b; }
+QPushButton#btn_match:pressed  { background-color: #064e85; }
+QPushButton#btn_match:disabled { background-color: #a4b0be; color: #ffffff; }
+
+/* ─── 키보드 포커스 (접근성 핵심) ─── */
+QPushButton:focus, QTableWidget:focus {
+    border: 3px solid #f39c12;
+    outline: none;
+}
+
+/* ─── 진행바 ─── */
+QProgressBar {
+    border: 1px solid #dcdde1; border-radius: 6px;
+    background-color: #ffffff; height: 26px;
+    text-align: center; font-weight: bold; color: #2d3436;
+}
+QProgressBar::chunk { background-color: #00875a; border-radius: 5px; }
+
+/* ─── 테이블 ─── */
+QTableWidget {
+    background-color: #ffffff;
+    alternate-background-color: #f1f4f8;
+    gridline-color: #dcdde1;
+    border: 1px solid #dcdde1; border-radius: 6px;
+    selection-background-color: #0a6ebd;
+    selection-color: #ffffff;
+}
+QTableWidget::item { padding: 10px 8px; }
+QHeaderView::section {
+    background-color: #2d3436; color: #ffffff;
+    padding: 10px; border: none;
+    font-weight: bold; font-size: 14px;
+}
+QScrollBar:vertical { background: #f1f2f6; width: 14px; margin: 0; }
+QScrollBar::handle:vertical { background: #b2bec3; border-radius: 7px; min-height: 30px; }
+QScrollBar::add-line, QScrollBar::sub-line { height: 0; }

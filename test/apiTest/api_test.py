@@ -1,5 +1,4 @@
 import requests
-
 # 1. 🚨 Base URL 뒤에 목록조회 엔드포인트(/NationalWelfarelistV001)를 반드시 붙여야 합니다!
 url = 'https://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001'
 

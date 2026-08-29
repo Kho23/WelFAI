@@ -11,6 +11,7 @@ from utils.excel_exporter import export_to_excel
 
 BASE_DIR = os.path.dirname(__file__)
 UI_PATH = os.path.join(os.path.dirname(__file__), 'ui', 'main_ui.ui')
+QSS_PATH = os.path.join(BASE_DIR, 'ui', 'style', 'style.qss')
 OUTPUT_PATH = os.path.join(BASE_DIR, 'data', 'output') # 아웃풋 폴더 경로 추가
 
 class WelfareApp(QMainWindow):
@@ -35,9 +36,15 @@ class WelfareApp(QMainWindow):
         self.pbar.setValue(0)
         self.label_status.setText('엑셀 파일을 선택해주세요.')
 
+        self.tableWidget.setAlternatingRowColors(True)
+
         header = self.tableWidget.horizontalHeader()
         if header:
             header.setSectionResizeMode(2, header.Stretch)
+
+        v_header = self.tableWidget.verticalHeader()
+        if v_header:
+            v_header.setDefaultSectionSize(44)
 
     def open_file_dialog(self, mode):
         """mode 에 따라 실행"""
@@ -145,6 +152,8 @@ class WelfareApp(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    with open(QSS_PATH, encoding='utf-8') as f:
+        app.setStyleSheet(f.read())
     window = WelfareApp()
     window.show()
     sys.exit(app.exec_())
