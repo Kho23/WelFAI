@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QThread, pyqtSignal
-from utils.excel_loader import load_excel
-from database.db_handler import DB_handler
+from domains.beneficiary.excel_loader import load_excel
+from shared.db import DB_handler
 
 class ExcelThread(QThread):
     progress_signal = pyqtSignal(int) # 진행률

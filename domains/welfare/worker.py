@@ -1,10 +1,10 @@
 import requests
 import xmltodict
 
-from core.models import WelfareService
+from domains.welfare.model import WelfareService
 from PyQt5.QtCore import QThread, pyqtSignal
-from database.db_handler import DB_handler
-from core.api_data import api_data
+from shared.db import DB_handler
+from domains.welfare.collector import api_data
 
 class ServiceImportThread(QThread):
     progress_signal = pyqtSignal(int) # 진행률
