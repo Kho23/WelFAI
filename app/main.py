@@ -3,16 +3,36 @@ import os
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QTableWidgetItem
 from PyQt5 import uic
 
-from database.db_handler import DB_handler
-from threads.excel_thread import ExcelThread
-from threads.service_thread import ServiceImportThread
-from threads.match_thread import MatchThread
-from utils.excel_exporter import export_to_excel
+from shared.db import DB_handler
+from domains.beneficiary.worker import ExcelThread
+from domains.welfare.worker import ServiceImportThread
+from domains.matching.worker import MatchThread
+from domains.matching.excel_exporter import export_to_excel
 
-BASE_DIR = os.path.dirname(__file__)
-UI_PATH = os.path.join(os.path.dirname(__file__), 'ui', 'main_ui.ui')
-QSS_PATH = os.path.join(BASE_DIR, 'ui', 'style', 'style.qss')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UI_PATH = os.path.join(BASE_DIR, 'app', 'shell', 'main_window.ui')
+STYLE_DIR = os.path.join(BASE_DIR, 'resources', 'styles')
+DOMAINS_DIR = os.path.join(BASE_DIR, 'domains')
 OUTPUT_PATH = os.path.join(BASE_DIR, 'data', 'output') # 아웃풋 폴더 경로 추가
+
+def load_stylesheet():
+    """전역 base.qss 를 먼저, 각 도메인 style.qss 를 뒤에 이어붙여 한 번에 적용한다.
+
+    위젯별 setStyleSheet 를 쓰면 전역 접근성 규칙(:focus 등)이 덮이므로
+    파일만 도메인별로 나누고 적용은 QApplication 레벨에서 한 번만 한다.
+    """
+    paths = [os.path.join(STYLE_DIR, 'base.qss')]
+    for domain in sorted(os.listdir(DOMAINS_DIR)):
+        qss = os.path.join(DOMAINS_DIR, domain, 'ui', 'style.qss')
+        if os.path.exists(qss):
+            paths.append(qss)
+
+    parts = []
+    for path in paths:
+        with open(path, encoding='utf-8') as f:
+            parts.append(f.read())
+    return '\n'.join(parts)
+
 
 class WelfareApp(QMainWindow):
     def __init__(self):
@@ -152,8 +172,7 @@ class WelfareApp(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    with open(QSS_PATH, encoding='utf-8') as f:
-        app.setStyleSheet(f.read())
+    app.setStyleSheet(load_stylesheet())
     window = WelfareApp()
     window.show()
     sys.exit(app.exec_())

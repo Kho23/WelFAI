@@ -2,12 +2,14 @@ import sqlite3
 import os
 from contextlib import contextmanager
 
-from core.models import UserInfo, WelfareService
-from core.enums import DisabilityLevel, DisabilityType
+from domains.beneficiary.model import UserInfo
+from domains.welfare.model import WelfareService
+from shared.enums import DisabilityLevel, DisabilityType
 
 class DB_handler:
     def __init__(self):
-        self.db_path = os.path.join(os.path.dirname(__file__), 'welfare.db')
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.db_path = os.path.join(base_dir, 'data', 'welfare.db')
         self.create_table()
 
     @contextmanager
